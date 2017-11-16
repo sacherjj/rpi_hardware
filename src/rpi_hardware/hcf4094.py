@@ -1,0 +1,74 @@
+
+class HCF4094(object):
+    """
+    Drives HCF4094 shift register with external pull up resistors
+    to high voltage and N-MOSFET pulling down to ground.
+
+    HCF4094 is capable of higher voltages than RPi interface (I'm using 12V.)
+    This allows a more robust signal line, but requires isolation with RPi.
+
+    I'm driving base of DMN3404 N-MOSFET through 100R resistor.
+    Base is pulled to Ground via 10K resistor.
+    Drain is connected directly to output for each of the 4 pins and via 4.7K resistor to 12V.
+    Source is connected to ground.
+
+    I am chaining 6 boards with each having 6 HCF4094 devices.  This allows 288 outputs.
+    """
+
+    # Due to N-MOSFET Pulling down, logic is reversed
+    _OUTPUT_HIGH = 0
+    _OUTPUT_LOW = 1
+
+    def __init__(self, gpio_ref, data_gpio, clock_gpio, strobe_gpio, out_enable_gpio):
+        """
+        Initialization
+
+        :param gpio_ref:  reference to RPi.GPIO object
+        :param data_gpio: data pin number
+        :param clock_gpio: clock pin number
+        :param strobe_gpio: strobe pin number
+        :param out_enable_gpio: output enable pin number
+        :return:
+        """
+        self._gpio = gpio_ref
+        self._data_pin = data_gpio
+        self._clock_pin = clock_gpio
+        self._strobe_pin = strobe_gpio
+        self._out_enable_pin = out_enable_gpio
+
+        self._gpio.setup(self._data_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
+        self._gpio.setup(self._clock_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
+        self._gpio.setup(self._out_enable_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
+        self._gpio.setup(self._strobe_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
+
+    def set_output_enable(self, enable):
+        """
+        Set output enable pin
+
+        :param enable: State of pin
+        :return: None
+        """
+        output_val = self._OUTPUT_LOW
+        if enable:
+            output_val = self._OUTPUT_HIGH
+        self._gpio.output(self._out_enable_pin, output_val)
+
+    def shift_data(self, data):
+        """
+        Shifts data out, in order of the list.
+
+        :param data: Data to be shifted as list or tuple
+        :return: Bits shifted count
+        """
+#        print(data)
+        shift_count = 0
+        self._gpio.output(self._strobe_pin, self._OUTPUT_LOW)
+        for bit_value in data:
+            value = (1, 0)[bit_value]  # Inverting due to N-MOSFET inversion, also error if not 0/1.
+            self._gpio.output(self._data_pin, value)
+            self._gpio.output(self._clock_pin, self._OUTPUT_HIGH)
+            self._gpio.output(self._clock_pin, self._OUTPUT_LOW)
+            shift_count += 1
+        self._gpio.output(self._strobe_pin, self._OUTPUT_HIGH)
+
+        return shift_count
