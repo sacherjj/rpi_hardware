@@ -50,13 +50,9 @@ def cached_with_immediate(call_time):
     """
     @simple_decorator
     def _cached_with_immediate(main_func):
-        def _decorator(*args, _cached={'last_call': None, 'value': None}, immediate=False, **kwargs):
-            last_call = _cached['last_call']
-            # Assure that we get a first call
-            if not last_call:
-                last_call = 0
+        def _decorator(*args, _cached={'last_call': 0, 'value': None}, immediate=False, **kwargs):
             cur_time = time.time()
-            if immediate or (cur_time - last_call) > call_time:
+            if immediate or (cur_time - _cached['last_call']) > call_time:
                 _cached['last_call'] = cur_time
                 _cached['value'] = main_func(*args, **kwargs)
             return _cached['value']
