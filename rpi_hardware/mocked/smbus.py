@@ -1,8 +1,20 @@
 
-from functools import wraps
+class SMBus(object):
+    """
+    This object should be imported instead of smbus.
 
+    try:
+        import RPi.GPIO as GPIO
+        import smbus
+        SIMULATION = False
+    except ImportError:
+        from rpi_hardware.mock import GPIO
+        from rpi_hardware.mock import smbus
+        SIMULATION = True
 
-class FakeSMBus(object):
+    under methods allow you to attach objects based on FakeSMBusDevice, which will provide the smbus return data that
+    the actual hardware device would return.
+    """
 
     def __init__(self, channel):
         self.addr = channel
@@ -22,10 +34,16 @@ class FakeSMBus(object):
         self._devices[device_addr] = device
 
     def _get_device(self, smbus_addr):
+        """
+        Returns device object registered at given smbus address
+
+        :param smbus_addr: Address for device
+        :return: FakeSMBusDevice object if exists at address or None
+        """
         try:
             return self._devices[smbus_addr]
         except KeyError:
-            raise ValueError('No device registered with smbus_addr: {}'.format(smbus_addr))
+            return None
 
     def write_quick(self, smbus_addr):
         """ Send only the read / write bit as write. """
@@ -90,7 +108,9 @@ class FakeSMBusDevice(object):
     """
     Base object for FakeSMBus hardware objects.  
     
-    These must be attached to FakeSMBus with _register_fake_device by calling super.__init__
+    These must be attached to mock.smbus.SMBus by calling super.__init__
+
+    Implement as many of the methods you wish to use with mock.smbus.SMBus.
     """
     def __init__(self, smbus, device_addr):
         self.device_addr = device_addr

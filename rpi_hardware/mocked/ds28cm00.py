@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from .smbus import FakeSMBusDevice
-from ..util.crc import crc8_value
+from rpi_hardware.util.crc import crc8_value
 
 
 class FakeDS28CM00(FakeSMBusDevice):
@@ -27,9 +27,7 @@ class FakeDS28CM00(FakeSMBusDevice):
         data = [0x70] + serial_number_byte_list
         self._data = data + [crc8_value(data)] + [0x01]
         self._write_map = [False] * 8 + [True]
-
         self._index = 0
-
         super().__init__(smbus, self._ADDRESS)
 
     def _inc_index(self):

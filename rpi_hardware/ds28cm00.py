@@ -2,6 +2,7 @@
 
 from .util.crc import crc8_check
 
+
 class DS28CM00(object):
     """
     I2C driver for DS28CM00 silicon serial number
