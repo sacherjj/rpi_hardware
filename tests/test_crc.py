@@ -1,5 +1,5 @@
 import pytest
-from src.rpi_hardware.util.crc import crc8_value
+from rpi_hardware.util.crc import crc8_value
 
 
 @pytest.mark.parametrize("byte_list,crc_value", [

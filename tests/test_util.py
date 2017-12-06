@@ -1,8 +1,8 @@
 import pytest
 import time
 
-from src.rpi_hardware.util.singleton import Singleton
-from src.rpi_hardware.util.decorators import cached_with_immediate
+from rpi_hardware.util.singleton import Singleton
+from rpi_hardware.util.decorators import cached_with_immediate
 
 
 class SingletonTest(Singleton):
