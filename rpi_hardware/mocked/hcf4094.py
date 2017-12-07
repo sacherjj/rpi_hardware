@@ -1,6 +1,6 @@
-class HCF4904Capture(object):
+class HCF4094Capture(object):
     """
-    This class is used to emulate the data that is shifted to the HCF4904.
+    This class is used to emulate the data that is shifted to the HCF4094.
 
     A callback method is registered and will be called with a list of tuples (index, bit_state) for each
     output that has changed since last strobe.  This allows you to simulate hardware that occurs when the

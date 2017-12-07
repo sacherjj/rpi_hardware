@@ -80,7 +80,7 @@ class FakeGPIO(Singleton):
         self._show_warnings = True
 
     def cleanup(self):
-        self._init()
+        self.destroy()
 
     def _validate_edge_type(self, edge_type):
         if edge_type not in (self.RISING, self.FALLING):

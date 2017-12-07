@@ -1,7 +1,7 @@
 import mock
 import pytest
 from rpi_hardware.mocked import GPIO
-from rpi_hardware.mocked import HCF4904Capture
+from rpi_hardware.mocked import HCF4094Capture
 from rpi_hardware import HCF4094
 
 OUT_EN = 20
@@ -15,7 +15,7 @@ def capture():
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
     callback = mock.Mock()
-    hcf_capture = HCF4904Capture(GPIO, DATA, CLOCK, STROBE, OUT_EN, [0]*16, callback)
+    hcf_capture = HCF4094Capture(GPIO, DATA, CLOCK, STROBE, OUT_EN, [0]*16, callback)
     hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN, True)
     return hcf_capture, hcf, callback
 
