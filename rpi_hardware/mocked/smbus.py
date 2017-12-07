@@ -96,11 +96,11 @@ class SMBus(object):
 
     def write_byte_data(self, smbus_addr, register, value):
         """ Write Byte Data transaction. """
-        self._get_device(smbus_addr).write_byte(register)
+        self._get_device(smbus_addr).write_byte(register, value)
 
     def write_word_data(self, smbus_addr, register, value):
         """ Write Word Data transaction. """
-        self._get_device(smbus_addr).write_word(register)
+        self._get_device(smbus_addr).write_word(register, value)
 
 
 class FakeSMBusDevice(object):
