@@ -28,10 +28,9 @@ class SMBus(object):
 
         :param device: object inherited from FakeSMBusDevice
         """
-        device_addr = device.smbus_addr
-        if device_addr in self._devices.keys():
-            raise ValueError('Device using smbus_addr: {} already registered.'.format(device_addr))
-        self._devices[device_addr] = device
+        if device.addr in self._devices.keys():
+            raise ValueError('Device using addr: {} already registered.'.format(device.addr))
+        self._devices[device.addr] = device
 
     def _get_device(self, smbus_addr):
         """
@@ -51,7 +50,7 @@ class SMBus(object):
 
     def read_byte(self, smbus_addr):
         """ Read a single byte from a device, without specifying a device register. """
-        self._get_device(smbus_addr).read_byte()
+        return self._get_device(smbus_addr).read_byte()
 
     def write_byte(self, smbus_addr, byte):
         """ Send a single byte to a device. """
@@ -63,7 +62,7 @@ class SMBus(object):
 
     def read_block_data(self, smbus_addr, register):
         """ Read Block Data transaction. """
-        self._get_device(smbus_addr).read_block_data(register)
+        return self._get_device(smbus_addr).read_block_data(register)
 
     def write_block_data(self, smbus_addr, register, value_list):
         """
@@ -81,7 +80,7 @@ class SMBus(object):
 
     def read_i2c_block_data(self, smbus_addr, register):
         """ Block Read transaction. """
-        self._get_device(smbus_addr).read_i2c_block_data(register)
+        return self._get_device(smbus_addr).read_i2c_block_data(register)
 
     def write_i2c_block_data(self, smbus_addr, register, value_list):
         """ Block Write transaction. """
@@ -89,11 +88,11 @@ class SMBus(object):
 
     def read_byte_data(self, smbus_addr, register):
         """ Read Byte Data transaction. """
-        self._get_device(smbus_addr).read_byte(register)
+        return self._get_device(smbus_addr).read_byte(register)
 
     def read_word_data(self, smbus_addr, register):
         """ Read Word Data transaction. """
-        self._get_device(smbus_addr).read_word(register)
+        return self._get_device(smbus_addr).read_word(register)
 
     def write_byte_data(self, smbus_addr, register, value):
         """ Write Byte Data transaction. """
@@ -113,44 +112,44 @@ class FakeSMBusDevice(object):
     Implement as many of the methods you wish to use with mock.smbus.SMBus.
     """
     def __init__(self, smbus, device_addr):
-        self.device_addr = device_addr
-        smbus._register_fake_device(self.device_addr)
+        self.addr = device_addr
+        smbus._register_fake_device(self)
 
-    def write_quick(self, smbus_addr):
+    def write_quick(self):
         raise NotImplementedError
 
-    def read_byte(self, smbus_addr):
+    def read_byte(self):
         raise NotImplementedError
 
-    def write_byte(self, smbus_addr, byte):
+    def write_byte(self, byte):
         raise NotImplementedError
 
-    def process_call(self, smbus_addr, register, value):
+    def process_call(self, register, value):
         raise NotImplementedError
 
-    def read_block_data(self, smbus_addr, register):
+    def read_block_data(self, register):
         raise NotImplementedError
 
-    def write_block_data(self, smbus_addr, register, value_list):
+    def write_block_data(self, register, value_list):
         raise NotImplementedError
 
-    def block_process_call(self, smbus_addr, register, value_list):
+    def block_process_call(self, register, value_list):
         raise NotImplementedError
 
-    def read_i2c_block_data(self, smbus_addr, register):
+    def read_i2c_block_data(self, register):
         raise NotImplementedError
 
-    def write_i2c_block_data(self, smbus_addr, register, value_list):
+    def write_i2c_block_data(self, register, value_list):
         raise NotImplementedError
 
-    def read_byte_data(self, smbus_addr, register):
+    def read_byte_data(self, register):
         raise NotImplementedError
 
-    def read_word_data(self, smbus_addr, register):
+    def read_word_data(self, register):
         raise NotImplementedError
 
-    def write_byte_data(self, smbus_addr, register, value):
+    def write_byte_data(self, register, value):
         raise NotImplementedError
 
-    def write_word_data(self, smbus_addr, register, value):
+    def write_word_data(self, register, value):
         raise NotImplementedError
