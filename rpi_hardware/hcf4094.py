@@ -45,6 +45,25 @@ class HCF4094(object):
         if enable_output_immediate:
             self.set_output_enable(True)
 
+    def cycle_pins(self):
+        """
+        Iterate this method and add print out and delays to cycle output for the pins on and off.
+
+        :return: Yields (name, pin state)
+        """
+        pins = ((self._data_pin, 'Data', self._OUTPUT_HIGH),
+                (self._data_pin, 'Data', self._OUTPUT_LOW),
+                (self._clock_pin, 'Clock', self._OUTPUT_HIGH),
+                (self._clock_pin, 'Clock', self._OUTPUT_LOW),
+                (self._strobe_pin, 'Strobe', self._OUTPUT_HIGH),
+                (self._strobe_pin, 'Strobe', self._OUTPUT_LOW),
+                (self._out_enable_pin, 'Enable', self._OUTPUT_HIGH),
+                (self._out_enable_pin, 'Enable', self._OUTPUT_LOW))
+        for _ in range(5):
+            for pin, name, state in pins:
+                self._gpio.output(pin, state)
+                yield pin, name, state
+
     def set_output_enable(self, enable):
         """
         Set output enable pin

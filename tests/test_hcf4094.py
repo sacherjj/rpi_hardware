@@ -20,6 +20,14 @@ def capture():
     return hcf_capture, hcf, callback
 
 
+@pytest.fixture
+def hcf():
+    GPIO.cleanup()
+    GPIO.setmode(GPIO.BCM)
+    hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN, enable_output_immediate=False)
+    return hcf
+
+
 def test_hcf_capture_send_data_internal(capture):
     hcf_capture, hcf, callback = capture
     hcf_capture._buffered_data = [1]
@@ -39,3 +47,8 @@ def test_hcf4904_shift_data(capture):
     # Partial shift
     hcf.shift_data([0, 1, 0, 1])
     callback.assert_called_with([(12, 0), (14, 0)])
+
+
+def test_hcf4904_pin_cycle(hcf):
+    for pin, name, state in hcf.cycle_pins():
+        assert state == GPIO._simulate_read_out_pin(pin)
