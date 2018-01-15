@@ -1,4 +1,3 @@
-# This is to fake Raspberry Pi GPIO for simulation and testing.
 from collections import defaultdict, deque
 
 from rpi_hardware.util.singleton import Singleton

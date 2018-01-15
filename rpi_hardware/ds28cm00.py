@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 from .util.crc import crc8_check
 
 

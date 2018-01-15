@@ -31,8 +31,3 @@ def crc8_check(byte_list, crc_value):
     :return:
     """
     return crc8_value(byte_list) == crc_value
-
-
-if __name__ == '__main__':
-    for i in range(256):
-        print("([{}], {}),".format(i, crc8_value([i])))
