@@ -1,5 +1,7 @@
 import mock
 import pytest
+import time
+
 from rpi_hardware.mocked import GPIO
 from rpi_hardware.mocked import HCF4094Capture
 from rpi_hardware import HCF4094
@@ -26,6 +28,33 @@ def hcf():
     GPIO.setmode(GPIO.BCM)
     hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN, enable_output_immediate=False)
     return hcf
+
+
+@pytest.fixture
+def slow_hcf():
+    GPIO.cleanup()
+    GPIO.setmode(GPIO.BCM)
+    callback = mock.Mock()
+    hcf_capture = HCF4094Capture(GPIO, DATA, CLOCK, STROBE, OUT_EN, [0]*8, callback)
+    hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN,
+                  enable_output_immediate=True,
+                  data_pre_clock_sleep=0.05,
+                  clock_high_sleep=0.1)
+    return hcf_capture, hcf, callback
+
+
+@pytest.mark.slow
+def test_slow_hcf(slow_hcf):
+    hcf_capture, hcf, callback = slow_hcf
+    # Get time to see if we slowed
+    start_time = time.time()
+    # Shift full set of 1's should get all changes
+    hcf.shift_data([1] * 8)
+    end_time = time.time()
+    # Verify that delays are working in HCF4094
+    assert(end_time - start_time > (0.05 + 0.1) * 8)
+    # Verify Operation with Delays
+    callback.assert_called_with([(index, 1) for index in range(8)])
 
 
 def test_hcf_capture_send_data_internal(capture):

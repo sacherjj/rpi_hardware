@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
         name='rpi_hardware',
-        version='0.2.0',
+        version='0.2.1',
         packages=find_packages(),
         url='https://github.com/sacherjj/rpi_hardware/',
         license='MIT License',

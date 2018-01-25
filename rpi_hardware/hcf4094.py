@@ -1,3 +1,6 @@
+from time import sleep
+
+
 class HCF4094(object):
     """
     Drives HCF4094 shift register with external pull up resistors
@@ -20,7 +23,9 @@ class HCF4094(object):
     _OUTPUT_LOW = 1
 
     def __init__(self, gpio_ref, data_gpio, clock_gpio, strobe_gpio, out_enable_gpio,
-                 enable_output_immediate=False):
+                 enable_output_immediate=False,
+                 data_pre_clock_sleep=0,
+                 clock_high_sleep=0):
         """
         Initialization
 
@@ -29,6 +34,8 @@ class HCF4094(object):
         :param clock_gpio: clock pin number
         :param strobe_gpio: strobe pin number
         :param out_enable_gpio: output enable pin number
+        :param data_pre_clock_sleep: time in seconds to pause after changing data pin
+        :param clock_high_sleep: time in seconds to pause after clock rise (clock pulse width)
         :return:
         """
         self._gpio = gpio_ref
@@ -36,6 +43,8 @@ class HCF4094(object):
         self._clock_pin = clock_gpio
         self._strobe_pin = strobe_gpio
         self._out_enable_pin = out_enable_gpio
+        self.data_pre_clock_sleep = data_pre_clock_sleep
+        self.clock_high_sleep = clock_high_sleep
 
         self._gpio.setup(self._data_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
         self._gpio.setup(self._clock_pin, self._gpio.OUT, initial=self._OUTPUT_LOW)
@@ -89,7 +98,11 @@ class HCF4094(object):
             # Inverting due to N-MOSFET inversion, also error if not 0/1.
             value = (HCF4094._OUTPUT_LOW, HCF4094._OUTPUT_HIGH)[bit_value]
             self._gpio.output(self._data_pin, value)
+            if self.data_pre_clock_sleep:
+                sleep(self.data_pre_clock_sleep)
             self._gpio.output(self._clock_pin, self._OUTPUT_HIGH)
+            if self.clock_high_sleep:
+                sleep(self.clock_high_sleep)
             self._gpio.output(self._clock_pin, self._OUTPUT_LOW)
             shift_count += 1
         self._gpio.output(self._strobe_pin, self._OUTPUT_HIGH)
