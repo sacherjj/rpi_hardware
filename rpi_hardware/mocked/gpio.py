@@ -78,7 +78,12 @@ class FakeGPIO(Singleton):
         self._edge_callback = defaultdict(list)
         self._show_warnings = True
 
-    def cleanup(self):
+    def _pin_is_input(self, pin_number):
+        pin = self._translate_pin(pin_number)
+        return self._pins[pin][0] == self.IN
+
+    def cleanup(self) -> None:
+        self._init()
         self.destroy()
 
     def _validate_edge_type(self, edge_type):
@@ -163,12 +168,15 @@ class FakeGPIO(Singleton):
             raise ValueError('pin {} is in an IN state and should be read with `input`, not a hidden method.'.format(pin_number))
         return self._pins[pin][1]
 
-    def output(self, pin_number, value):
+    def _validate_output(self, pin, value):
         if value not in (self.HIGH, self.LOW):
             raise ValueError('Illegal value. {} or {}'.format(self.LOW, self.HIGH))
-        pin = self._translate_pin(pin_number)
         if self._pins[pin][0] == self.IN:
-            raise ValueError('pin {} is an IN state.'.format(pin_number))
+            raise ValueError('pin {} is an IN state.'.format(pin))
+
+    def output(self, pin_number, value):
+        pin = self._translate_pin(pin_number)
+        self._validate_output(pin, value)
         old_value = self._pins[pin][1]
         self._pins[pin][1] = value
         self._test_edge_callback(pin, old_value, value)

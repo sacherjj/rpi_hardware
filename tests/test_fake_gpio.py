@@ -34,6 +34,12 @@ def test_pin_mode_not_set(raw):
         GPIO.output(3, GPIO.HIGH)
 
 
+def test_pin_is_input(bcm):
+    assert GPIO._pin_is_input(4) is True
+    GPIO.setup(4, GPIO.OUT)
+    assert GPIO._pin_is_input(4) is False
+
+
 def test_mode(raw):
     assert GPIO.getmode() == GPIO.UNKNOWN
     GPIO.setmode(GPIO.BOARD)
@@ -70,6 +76,18 @@ def test_input(board):
     assert GPIO.input(40) == GPIO.HIGH
     GPIO._simulate_set_pin(40, GPIO.LOW)
     assert GPIO.input(40) == GPIO.LOW
+
+
+def test_validate_output(bcm):
+    pin = 4
+    GPIO.setup(pin, GPIO.IN)
+    with pytest.raises(ValueError):
+        # Setup as input error
+        GPIO._validate_output(pin, GPIO.HIGH)
+    GPIO.setup(pin, GPIO.OUT)
+    with pytest.raises(ValueError):
+        not_high_or_low = 2
+        GPIO._validate_output(pin, not_high_or_low)
 
 
 def test_output(bcm):
