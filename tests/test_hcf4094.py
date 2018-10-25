@@ -1,4 +1,3 @@
-import mock
 import pytest
 import time
 
@@ -13,10 +12,10 @@ DATA = 21
 
 
 @pytest.fixture
-def capture():
+def capture(mocker):
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
-    callback = mock.Mock()
+    callback = mocker.Mock()
     hcf_capture = HCF4094Capture(GPIO, DATA, CLOCK, STROBE, OUT_EN, [0]*16, callback)
     hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN, True)
     return hcf_capture, hcf, callback
@@ -31,10 +30,10 @@ def hcf():
 
 
 @pytest.fixture
-def slow_hcf():
+def slow_hcf(mocker):
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
-    callback = mock.Mock()
+    callback = mocker.Mock()
     hcf_capture = HCF4094Capture(GPIO, DATA, CLOCK, STROBE, OUT_EN, [0]*8, callback)
     hcf = HCF4094(GPIO, DATA, CLOCK, STROBE, OUT_EN,
                   enable_output_immediate=True,

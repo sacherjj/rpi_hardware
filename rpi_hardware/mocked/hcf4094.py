@@ -74,3 +74,4 @@ class HCF4094Capture(object):
                    if old != new]
         self.current_data = tuple(new_data)
         self._callback(changes)
+        self._buffered_data = self._buffered_data[-self._bit_count:]
